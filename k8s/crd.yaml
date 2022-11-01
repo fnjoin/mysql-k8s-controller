@@ -13,27 +13,19 @@ spec:
     - name: v1
       served: true
       storage: true
-      additionalPrinterColumns:
-        - name: storage
-          type: string
-          jsonPath: .spec.storage
-          description: Storage capacity allocated
-        - name: memory
-          type: string
-          jsonPath: .spec.memory
-          description: Memory allocated
-        - name: cpu
-          type: string
-          jsonPath: .spec.cpu
-          description: CPU millis allocated
-        - name: ready
-          type: string
-          jsonPath: .status.ready
-          description: Is MySql resource ready
       schema:
         openAPIV3Schema:
           type: object
           properties:
+            spec:
+              type: object
+              properties:
+                cpu:
+                  type: string
+                memory:
+                  type: string
+                storage:
+                  type: string
             status:
               type: object
               properties:
@@ -51,12 +43,20 @@ spec:
                       lastTransitionTime:
                         type: string
                         format: date-time
-            spec:
-              type: object
-              properties:
-                cpu:
-                  type: string
-                memory:
-                  type: string
-                storage:
-                  type: string
+      additionalPrinterColumns:
+        - name: storage
+          type: string
+          jsonPath: .spec.storage
+          description: Storage capacity allocated
+        - name: memory
+          type: string
+          jsonPath: .spec.memory
+          description: Memory allocated
+        - name: cpu
+          type: string
+          jsonPath: .spec.cpu
+          description: CPU millis allocated
+        - name: ready
+          type: string
+          jsonPath: .status.ready
+          description: Is MySql resource ready

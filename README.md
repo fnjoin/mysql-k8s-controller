@@ -2,7 +2,7 @@
 
 A sample Kubernetes controller written in Java with spring-boot. Most controllers are written in golang but the purpose of this repo is to show that it is possible to write a Kubernetes controller in Java as well. Writing a controller in Java instead of golang enables Java developers to learn about Kubernetes internals quicker since the language is not something they have to learn at the same time.
 
-This controller handles the lifecycle of `mysql` type custom-resources. The custom-resource is defined by a CRD registered with the cluster. The controller relies on built-in Kubernetes resources to compose a `mysql` resource. It creates the following child-resources:
+This controller defines and handles the lifecycle of `mysql` type custom-resources. The custom-resource is defined by a [CRD registered with the cluster](k8s/crd.yaml). The controller relies on built-in Kubernetes resources to compose a `mysql` resource. It creates the following child-resources:
 
 - A `Secret` which contains the login credentials to connect to the MySql instance.
 - A `StatefulSet` which runs a single Pod MySql instance. The pod is assigned cpu, memory, and disk resources according to the `mysql` resource spec.
@@ -23,7 +23,7 @@ To run the sample, we need to register the CRD with cluster and then run the con
 
 ### Apply the CRD
 
-Apply the CRD so the cluster understands the `mysql` types of resources 
+Apply the [CRD](k8s/crd.yaml) so the cluster understands the `mysql` types of resources:
 
 ```
 kubectl apply -f k8s/crd.yaml
@@ -39,7 +39,8 @@ kubectl apply -f k8s/crd.yaml
 
 
 ### Basics
-Apply one of the sample `mysql` resource YAMLs
+
+Apply one of the [sample](k8s/sample1.yaml) `mysql` resource YAMLs
 
 ```
 kubectl apply -f k8s/sample1.yaml
