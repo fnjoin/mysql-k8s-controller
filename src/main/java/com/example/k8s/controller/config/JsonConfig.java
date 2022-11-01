@@ -1,4 +1,4 @@
-package com.example.k8s.controller;
+package com.example.k8s.controller.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;

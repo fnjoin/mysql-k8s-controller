@@ -1,9 +1,12 @@
 package com.example.k8s.controller;
 
+import com.example.k8s.controller.customresource.mysql.MysqlCustomResource;
+import com.example.k8s.controller.customresource.mysql.MysqlCustomResourceController;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -11,13 +14,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/databases")
 public class ApiController {
 
-    private final MysqlCRDController mysqlCRDController;
+    private final MysqlCustomResourceController mysqlController;
 
-    @GetMapping("/databases")
+    @GetMapping
     public List<MysqlBean> listInstances() {
-        return mysqlCRDController.list().stream()
+        return mysqlController.list().stream()
                 .map(m -> MysqlBean.builder()
                         .name(m.getMetadata().getName())
                         .spec(m.getSpec())
@@ -30,7 +34,7 @@ public class ApiController {
     @Builder
     public static class MysqlBean {
         String name;
-        Mysql.Spec spec;
-        Mysql.Status status;
+        MysqlCustomResource.Spec spec;
+        MysqlCustomResource.Status status;
     }
 }

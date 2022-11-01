@@ -21,8 +21,10 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	implementation 'io.kubernetes:client-java-extended:15.0.1'
+	implementation 'io.kubernetes:client-java-extended:16.0.1'
 	implementation 'com.github.java-json-tools:json-patch:1.13'
+
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

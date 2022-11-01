@@ -1,5 +1,6 @@
-package com.example.k8s.controller;
+package com.example.k8s.controller.customresource.base;
 
+import com.example.k8s.controller.config.KubernetesConnection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,14 +13,14 @@ import java.util.concurrent.Executors;
 
 @Component
 @RequiredArgsConstructor
-public class CRDControllerConfig {
+public class SharedIndexInformerUserConfig {
 
     private final KubernetesConnection connection;
-    private final List<CRDController> controllers;
+    private final List<CustomResourceController> controllers;
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     @Autowired
-    public void collectAllSharedInformerFactoryDependants(List<SharedInformerFactoryDependant> dependants) { /* we want spring to initialize all the informers first */ }
+    public void collectAllSharedInformerFactoryUsers(List<SharedIndexInformerUser> users) { /* we want spring to initialize all the informers first */ }
 
     @PostConstruct
     public void init() {

@@ -1,0 +1,9 @@
+apiVersion: fnjoin.com/v1
+kind: Mysql
+metadata:
+  name: db-2
+  namespace: dev
+spec:
+  storage: 256Mi
+  memory: 256Mi
+  cpu: 500m

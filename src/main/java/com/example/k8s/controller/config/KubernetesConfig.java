@@ -1,4 +1,4 @@
-package com.example.k8s.controller;
+package com.example.k8s.controller.config;
 
 import io.kubernetes.client.informer.SharedInformerFactory;
 import io.kubernetes.client.openapi.ApiClient;
