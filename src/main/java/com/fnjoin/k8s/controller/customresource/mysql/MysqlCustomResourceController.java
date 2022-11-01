@@ -1,8 +1,8 @@
-package com.example.k8s.controller.customresource.mysql;
+package com.fnjoin.k8s.controller.customresource.mysql;
 
-import com.example.k8s.controller.config.KubernetesConnection;
-import com.example.k8s.controller.customresource.base.ChildResourceListener;
-import com.example.k8s.controller.customresource.base.CustomResourceController;
+import com.fnjoin.k8s.controller.config.KubernetesConnection;
+import com.fnjoin.k8s.controller.customresource.base.ChildResourceListener;
+import com.fnjoin.k8s.controller.customresource.base.CustomResourceController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kubernetes.client.openapi.models.V1Condition;
 import io.kubernetes.client.openapi.models.V1OwnerReference;

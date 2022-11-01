@@ -1,6 +1,6 @@
-package com.example.k8s.controller.customresource.base;
+package com.fnjoin.k8s.controller.customresource.base;
 
-import com.example.k8s.controller.config.KubernetesConnection;
+import com.fnjoin.k8s.controller.config.KubernetesConnection;
 import io.kubernetes.client.common.KubernetesObject;
 import io.kubernetes.client.extended.controller.reconciler.Request;
 import io.kubernetes.client.extended.workqueue.RateLimitingQueue;
@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
-public abstract class ChildResourceListener<O extends KubernetesObject> implements SharedIndexInformerUser {
+public abstract class ChildResourceListener<O extends KubernetesObject> {
 
     @Getter
     private SharedIndexInformer<O> informer;
@@ -51,14 +51,11 @@ public abstract class ChildResourceListener<O extends KubernetesObject> implemen
             }
 
             private void addRequestToQueueForParent(String action, KubernetesObject childResource) {
-                log.debug("{}: Type={}, Name={}", action, childResource.getClass().getSimpleName(), childResource.getMetadata().getName());
+                log.debug("Got child-resource event: Event={}, Type={}, Name={}", action, childResource.getClass().getSimpleName(), childResource.getMetadata().getName());
                 Optional.ofNullable(childResource.getMetadata().getOwnerReferences().get(0))
                         .filter(ref -> ref.getApiVersion().equals(requiredApiVersion) && ref.getKind().equals(requiredKind))
                         .map(ref -> new Request(getConnection().getSpace(), ref.getName()))
-                        .ifPresent(req -> {
-                            log.debug("Adding to WorkQueue: Request={}", req);
-                            workQueue.addRateLimited(req);
-                        });
+                        .ifPresent(req -> workQueue.addRateLimited(req));
             }
         });
     }

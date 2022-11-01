@@ -1,8 +1,8 @@
-package com.example.k8s.controller.customresource.base;
+package com.fnjoin.k8s.controller.customresource.base;
 
-import com.example.k8s.controller.config.KubernetesConnection;
+import com.fnjoin.k8s.controller.config.KubernetesConnection;
+import com.fnjoin.k8s.controller.customresource.base.CustomResourceController;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -13,14 +13,12 @@ import java.util.concurrent.Executors;
 
 @Component
 @RequiredArgsConstructor
-public class SharedIndexInformerUserConfig {
+public class CustomResourceControllerConfig {
 
     private final KubernetesConnection connection;
     private final List<CustomResourceController> controllers;
-    private final ExecutorService executor = Executors.newCachedThreadPool();
 
-    @Autowired
-    public void collectAllSharedInformerFactoryUsers(List<SharedIndexInformerUser> users) { /* we want spring to initialize all the informers first */ }
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     @PostConstruct
     public void init() {

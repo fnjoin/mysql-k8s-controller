@@ -1,6 +1,6 @@
-package com.example.k8s.controller.customresource.mysql;
+package com.fnjoin.k8s.controller.customresource.mysql;
 
-import com.example.k8s.controller.customresource.base.ChildResourceListener;
+import com.fnjoin.k8s.controller.customresource.base.ChildResourceListener;
 import io.kubernetes.client.informer.SharedIndexInformer;
 import io.kubernetes.client.informer.SharedInformerFactory;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;

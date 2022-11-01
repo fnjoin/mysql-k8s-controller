@@ -1,6 +1,6 @@
-package com.example.k8s.controller.customresource.mysql;
+package com.fnjoin.k8s.controller.customresource.mysql;
 
-import com.example.k8s.controller.customresource.base.ChildResourceListener;
+import com.fnjoin.k8s.controller.customresource.base.ChildResourceListener;
 import io.kubernetes.client.custom.IntOrString;
 import io.kubernetes.client.informer.SharedIndexInformer;
 import io.kubernetes.client.informer.SharedInformerFactory;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 @Service

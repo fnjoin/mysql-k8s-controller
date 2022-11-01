@@ -1,4 +1,4 @@
-package com.example.k8s.controller;
+package com.fnjoin.k8s.controller;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

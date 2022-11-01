@@ -1,6 +1,6 @@
-package com.example.k8s.controller.customresource.base;
+package com.fnjoin.k8s.controller.customresource.base;
 
-import com.example.k8s.controller.config.KubernetesConnection;
+import com.fnjoin.k8s.controller.config.KubernetesConnection;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kubernetes.client.common.KubernetesListObject;
 import io.kubernetes.client.extended.controller.reconciler.Reconciler;
@@ -68,7 +68,7 @@ public class CustomResourceReconciler<O extends CustomResource<O>, L extends Kub
                     applied,
                     null,
                     null);
-            log.info("REPLACED: Resource={}", objectMapper.writeValueAsString(applied));
+            log.info("Replacing: Resource={}", objectMapper.writeValueAsString(applied));
         } catch (ApiException e) {
             if (e.getCode() == 409) {
                 throw new ConflictingVersionsException();
@@ -90,7 +90,7 @@ public class CustomResourceReconciler<O extends CustomResource<O>, L extends Kub
         if (resourceInDesiredState) {
             statusChangeNeeded = controller.isStatusChangeNeeded(uid, resource);
         }
-        log.debug("ResourceInDesiredState={}, StatusChangeNeeded={}, Type={}, Name={}", resourceInDesiredState, statusChangeNeeded, resource.getClass().getSimpleName(), resource.getMetadata().getName());
+        log.debug("Reconciling: Type={}, Name={}, ResourceInDesiredState={}, StatusChangeNeeded={}", resource.getClass().getSimpleName(), resource.getMetadata().getName(), resourceInDesiredState, statusChangeNeeded);
 
         return true && resourceInDesiredState && !statusChangeNeeded;
     }

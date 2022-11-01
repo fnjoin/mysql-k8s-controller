@@ -1,15 +1,12 @@
-space: dev
+space: default
 instance-identity: dev
-
-springdoc:
-  swagger-ui:
-    path: /
 
 logging:
   level:
-    com.example.k8s.controller.customresource.base: DEBUG
+    com.fnjoin.k8s.controller.customresource.base: DEBUG
   pattern:
-    console: '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){blue} %clr(%-5p) %clr(%-25.25logger{0}){blue} %clr(:){red} %clr(%m){faint}%n'
+    console: '%clr(%d{HH:mm:ss.SSS}){blue}%clr(:){red} %clr(%m){faint}%n'
+
 spring:
   output:
     ansi:

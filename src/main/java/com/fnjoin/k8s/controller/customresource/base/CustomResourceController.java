@@ -1,7 +1,7 @@
-package com.example.k8s.controller.customresource.base;
+package com.fnjoin.k8s.controller.customresource.base;
 
-import com.example.k8s.controller.config.KubernetesConnection;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fnjoin.k8s.controller.config.KubernetesConnection;
 import io.kubernetes.client.common.KubernetesListObject;
 import io.kubernetes.client.extended.controller.Controller;
 import io.kubernetes.client.extended.controller.LeaderElectingController;
@@ -20,13 +20,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
-public abstract class CustomResourceController<O extends CustomResource<O>, L extends KubernetesListObject> implements SharedIndexInformerUser {
+public abstract class CustomResourceController<O extends CustomResource<O>, L extends KubernetesListObject> {
 
     private Controller controller;
     private Indexer<O> indexer;
@@ -99,17 +97,12 @@ public abstract class CustomResourceController<O extends CustomResource<O>, L ex
         return Optional.ofNullable(indexer.getByKey(key));
     }
 
-    public List<O> list() {
-        return indexer.list().stream()
-                .map(item -> item.deepCopy(true))
-                .collect(Collectors.toList());
-    }
-
     public V1OwnerReference createOwnerReference(String uid, O resource) {
         return new V1OwnerReference()
                 .uid(uid)
                 .apiVersion(resource.getApiVersion())
                 .kind(resource.getKind())
+                .controller(true)
                 .name(resource.getMetadata().getName());
     }
 

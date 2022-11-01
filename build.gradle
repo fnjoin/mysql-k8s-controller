@@ -4,7 +4,7 @@ plugins {
 	id 'java'
 }
 
-group = 'com.example.k8s'
+group = 'com.fnjoin.k8s'
 version = '1.0'
 sourceCompatibility = '17'
 
@@ -20,11 +20,7 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-
 	implementation 'io.kubernetes:client-java-extended:16.0.1'
-	implementation 'com.github.java-json-tools:json-patch:1.13'
-
-	implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

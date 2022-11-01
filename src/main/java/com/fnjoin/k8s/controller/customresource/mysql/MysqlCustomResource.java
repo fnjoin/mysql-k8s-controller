@@ -1,6 +1,6 @@
-package com.example.k8s.controller.customresource.mysql;
+package com.fnjoin.k8s.controller.customresource.mysql;
 
-import com.example.k8s.controller.customresource.base.CustomResource;
+import com.fnjoin.k8s.controller.customresource.base.CustomResource;
 import io.kubernetes.client.common.KubernetesListObject;
 import io.kubernetes.client.openapi.models.V1Condition;
 import io.kubernetes.client.openapi.models.V1ListMeta;

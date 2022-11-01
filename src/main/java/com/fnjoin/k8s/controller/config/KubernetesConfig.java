@@ -1,10 +1,13 @@
-package com.example.k8s.controller.config;
+package com.fnjoin.k8s.controller.config;
 
 import io.kubernetes.client.informer.SharedInformerFactory;
 import io.kubernetes.client.openapi.ApiClient;
-import io.kubernetes.client.openapi.apis.*;
+import io.kubernetes.client.openapi.apis.AppsV1Api;
+import io.kubernetes.client.openapi.apis.CoreV1Api;
+import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.KubeConfig;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +20,7 @@ import java.io.FileReader;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class KubernetesConfig {
 
     @Bean

@@ -1,4 +1,4 @@
-package com.example.k8s.controller.customresource.base;
+package com.fnjoin.k8s.controller.customresource.base;
 
 public class ConflictingVersionsException extends RuntimeException {
 }
