@@ -2,13 +2,13 @@
 
 A sample Kubernetes controller written in Java with spring-boot. Most controllers are written in golang but the purpose of this repo is to show that it is possible to write a Kubernetes controller in Java as well. Writing a controller in Java instead of golang enables Java developers to learn about Kubernetes internals quicker since the language is not something they have to learn at the same time.
 
-This controller defines and handles the lifecycle of `mysql` type custom-resources. The custom-resource is defined by a [CRD registered with the cluster](k8s/crd.yaml). The controller relies on built-in Kubernetes resources to compose a `mysql` resource. It creates the following child-resources:
+This controller defines and handles the lifecycle of `mysql` type custom resources. The custom resource is defined by a [CRD registered with the cluster](k8s/crd.yaml). This controller relies on built-in Kubernetes resources to compose a `mysql` resource. It creates the following child resources:
 
 - A `Secret` which contains the login credentials to connect to the MySql instance.
 - A `StatefulSet` which runs a single Pod MySql instance. The pod is assigned cpu, memory, and disk resources according to the `mysql` resource spec.
 - A `Service` which fronts the MySql pod with a consistent name. This way the clients connect to the stable name provided by the service instead of figuring out which pod to connect to directly.
 
-In addition to creating the above child resources, the controller also makes sure that these resource exist and are ready to use. The controller also keeps the `status` section of `mysql` resources updated with the current state of the child-resources
+In addition to creating the above child resources, the controller also makes sure that these resources continue to exist and are ready to use. The controller also keeps the `status` section of `mysql` resource updated with the current state of the child resources.
 
 ## Pre-requisites
 
@@ -19,7 +19,7 @@ In addition to creating the above child resources, the controller also makes sur
 
 ## Running
 
-To run the sample, we need to register the CRD with cluster and then run the controller application locally so that it acts as the controller for these CRD objects
+To run the sample, we need to register the CRD with cluster and then run this application locally so that it acts as the controller for these CRD objects
 
 ### Apply the CRD
 
@@ -40,7 +40,7 @@ kubectl apply -f k8s/crd.yaml
 
 ### Basics
 
-Apply one of the [sample](k8s/sample1.yaml) `mysql` resource YAMLs
+Apply one of the [sample](k8s/sample1.yaml) `mysql` resource YAMLs to create a MySql instance with 256MB of disk, 128MB of memory, and 1/4 of a CPU:
 
 ```
 kubectl apply -f k8s/sample1.yaml
@@ -52,12 +52,14 @@ This creates a `db-1` resource. Verify it by running:
 kubectl get mysql
 ```
 
-Which will return a list like, notice the `READY` column:
+Which will return a list like the following:
 
 ```
 NAME   STORAGE   MEMORY   CPU    READY
 db-1   256Mi     128Mi    250m   false
 ```
+
+Notice the `READY` column, it is an attribute set by the controller to indicate if the Mysql resource is ready to be used or not. 
 
 ### Details of a `mysql` resource
 
@@ -86,15 +88,17 @@ status:
       status: AVAILABLE
       type: Secret
     - lastTransitionTime: "2022-11-01T17:41:38.431363-04:00"
-      status: AVAILABLE
+      status: CREATING
       type: StatefulSet
-  ready: true
+  ready: false
 ```
 
-Notice the `status` section ... the `conditions` and `ready` flag are also maintained by the controller.
+The `status` section is reserved for controllers like ours to update so that it informs us of inner details of what is happening with the resource. Notice that *StatefulSet*' condition is in the status of *CREATING* and hence the MySql resource itself is not ready.
+
+After some time, the *StatefulSet* created by this controller for `db-1` will become ready and the controller will detect that and update this status.
 
 ### Chaos Testing
 
-For a bit of *chaos testing*, if you delete the corresponding `StatefulSet` object, notice how the controller re-creates that child-resource and how it keeps the `status` object updated.
+For a bit of *chaos testing*, if you delete the corresponding `StatefulSet` object, notice how the controller re-creates that child resource and how it keeps the `status` object updated.
 
 Also, notice what happens when you delete a `mysql` resource. You can do that by running `kubectl delete mysql db-1`. Spoiler alert! the child resources will get cleaned up as well.
