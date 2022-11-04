@@ -19,14 +19,13 @@ import java.util.Map;
 public class ServiceListener extends ChildResourceListener<V1Service> {
 
     @Override
-    public SharedIndexInformer<V1Service> createInformer(String space, SharedInformerFactory factory) {
-        return getConnection().getSharedInformerFactory().sharedIndexInformerFor(params -> getConnection().getCoreV1Api().listNamespacedServiceCall(
-                        getConnection().getSpace(),
-                        null,
+    public SharedIndexInformer<V1Service> createInformer(SharedInformerFactory factory) {
+        return getConnection().getSharedInformerFactory().sharedIndexInformerFor(params -> getConnection().getCoreV1Api().listServiceForAllNamespacesCall(
                         null,
                         null,
                         null,
                         "managed-by=fnjoin.com",
+                        null,
                         null,
                         params.resourceVersion,
                         null,
@@ -38,7 +37,7 @@ public class ServiceListener extends ChildResourceListener<V1Service> {
     }
 
     @SneakyThrows
-    public void createService(String name, V1OwnerReference reference) {
+    public void createService(String namespace, String name, V1OwnerReference reference) {
 
         Map<String, String> labels = Map.of(
                 "type", "mysql",
@@ -46,7 +45,7 @@ public class ServiceListener extends ChildResourceListener<V1Service> {
                 "managed-by", "fnjoin.com");
 
         // create the mysql service
-        getConnection().getCoreV1Api().createNamespacedService(getConnection().getSpace(),
+        getConnection().getCoreV1Api().createNamespacedService(namespace,
                 new V1Service()
                         .apiVersion("v1")
                         .kind("Service")

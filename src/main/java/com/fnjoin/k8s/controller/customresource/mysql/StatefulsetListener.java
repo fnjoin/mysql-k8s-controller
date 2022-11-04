@@ -21,14 +21,14 @@ import java.util.Map;
 public class StatefulsetListener extends ChildResourceListener<V1StatefulSet> {
 
     @SneakyThrows
-    public void createStatefulSet(String name, V1OwnerReference reference, MysqlCustomResource.Spec spec) {
+    public void createStatefulSet(String namespace, String name, V1OwnerReference reference, MysqlCustomResource.Spec spec) {
 
         Map<String, String> labels = Map.of(
                 "type", "mysql",
                 "db", name,
                 "managed-by", "fnjoin.com");
 
-        getConnection().getAppsV1Api().createNamespacedStatefulSet(getConnection().getSpace(),
+        getConnection().getAppsV1Api().createNamespacedStatefulSet(namespace,
                 new V1StatefulSet()
                         .apiVersion("apps/v1")
                         .kind("StatefulSet")
@@ -44,7 +44,7 @@ public class StatefulsetListener extends ChildResourceListener<V1StatefulSet> {
                                 .volumeClaimTemplates(List.of(new V1PersistentVolumeClaim()
                                         .metadata(new V1ObjectMeta()
                                                 .name("data")
-                                                .namespace(getConnection().getSpace())
+                                                .namespace(namespace)
                                                 .labels(labels))
                                         .spec(new V1PersistentVolumeClaimSpec()
                                                 .accessModes(List.of("ReadWriteOnce"))
@@ -99,14 +99,12 @@ public class StatefulsetListener extends ChildResourceListener<V1StatefulSet> {
     }
 
     @Override
-    public SharedIndexInformer<V1StatefulSet> createInformer(String space, SharedInformerFactory factory) {
-        return getConnection().getSharedInformerFactory().sharedIndexInformerFor(params -> getConnection().getAppsV1Api().listNamespacedStatefulSetCall(
-                        getConnection().getSpace(),
-                        null,
-                        null,
+    public SharedIndexInformer<V1StatefulSet> createInformer(SharedInformerFactory factory) {
+        return getConnection().getSharedInformerFactory().sharedIndexInformerFor(params -> getConnection().getAppsV1Api().listStatefulSetForAllNamespacesCall(null,
                         null,
                         null,
                         "managed-by=fnjoin.com",
+                        null,
                         null,
                         params.resourceVersion,
                         null,

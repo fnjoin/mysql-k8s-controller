@@ -22,14 +22,13 @@ import java.util.UUID;
 public class SecretListener extends ChildResourceListener<V1Secret> {
 
     @Override
-    public SharedIndexInformer<V1Secret> createInformer(String space, SharedInformerFactory factory) {
-        return getConnection().getSharedInformerFactory().sharedIndexInformerFor(params -> getConnection().getCoreV1Api().listNamespacedSecretCall(
-                        getConnection().getSpace(),
-                        null,
+    public SharedIndexInformer<V1Secret> createInformer(SharedInformerFactory factory) {
+        return getConnection().getSharedInformerFactory().sharedIndexInformerFor(params -> getConnection().getCoreV1Api().listSecretForAllNamespacesCall(
                         null,
                         null,
                         null,
                         "managed-by=fnjoin.com",
+                        null,
                         null,
                         params.resourceVersion,
                         null,
@@ -41,7 +40,7 @@ public class SecretListener extends ChildResourceListener<V1Secret> {
     }
 
     @SneakyThrows
-    public void createSecret(String name, V1OwnerReference reference) {
+    public void createSecret(String namespace, String name, V1OwnerReference reference) {
 
         Map<String, String> labels = Map.of(
                 "type", "mysql",
@@ -49,7 +48,7 @@ public class SecretListener extends ChildResourceListener<V1Secret> {
                 "managed-by", "fnjoin.com");
 
         // create the mysql secret
-        getConnection().getCoreV1Api().createNamespacedSecret(getConnection().getSpace(),
+        getConnection().getCoreV1Api().createNamespacedSecret(namespace,
                 new V1Secret()
                         .apiVersion("v1")
                         .kind("Secret")

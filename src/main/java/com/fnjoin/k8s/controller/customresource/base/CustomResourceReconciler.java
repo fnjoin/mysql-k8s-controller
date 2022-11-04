@@ -29,7 +29,7 @@ public class CustomResourceReconciler<O extends CustomResource<O>, L extends Kub
     @Override
     public Result reconcile(Request request) {
         try {
-            Optional<O> obj = controller.find(request.getName());
+            Optional<O> obj = controller.find(request.getNamespace(), request.getName());
             if (obj.isPresent() && !isInDesiredState(obj.get())) {
 
                 O original = obj.get();
@@ -62,7 +62,7 @@ public class CustomResourceReconciler<O extends CustomResource<O>, L extends Kub
             applied.getMetadata().setResourceVersion(resourceVersion);
             connection.getCustomObjectsApi().replaceNamespacedCustomObject(group,
                     version,
-                    connection.getSpace(),
+                    applied.getMetadata().getNamespace(),
                     plural,
                     applied.getMetadata().getName(),
                     applied,

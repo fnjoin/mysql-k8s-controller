@@ -44,10 +44,13 @@ public class MysqlCustomResourceController extends CustomResourceController<Mysq
 
     @Override
     public boolean isResourceInDesiredState(String uid, MysqlCustomResource resource) {
+
+        String namespace = resource.getMetadata().getNamespace();
         String name = resource.getMetadata().getName();
+
         return List.of(statefulsetListener, secretListener, serviceListener)
                 .stream()
-                .allMatch(listener -> listener.find(name).isPresent());
+                .allMatch(listener -> listener.find(namespace, name).isPresent());
     }
 
     @Override
@@ -58,19 +61,20 @@ public class MysqlCustomResourceController extends CustomResourceController<Mysq
     @Override
     public MysqlCustomResource applyChanges(String uid, MysqlCustomResource resource) {
 
+        String namespace = resource.getMetadata().getNamespace();
         String name = resource.getMetadata().getName();
         V1OwnerReference reference = createOwnerReference(uid, resource);
 
-        if (statefulsetListener.find(name).isEmpty()) {
-            statefulsetListener.createStatefulSet(name, reference, resource.getSpec());
+        if (statefulsetListener.find(namespace, name).isEmpty()) {
+            statefulsetListener.createStatefulSet(namespace, name, reference, resource.getSpec());
         }
 
-        if (secretListener.find(name).isEmpty()) {
-            secretListener.createSecret(name, reference);
+        if (secretListener.find(namespace, name).isEmpty()) {
+            secretListener.createSecret(namespace, name, reference);
         }
 
-        if (serviceListener.find(name).isEmpty()) {
-            serviceListener.createService(name, reference);
+        if (serviceListener.find(namespace, name).isEmpty()) {
+            serviceListener.createService(namespace, name, reference);
         }
 
         return resource;
@@ -79,12 +83,14 @@ public class MysqlCustomResourceController extends CustomResourceController<Mysq
     @Override
     public boolean applyStatusChanges(MysqlCustomResource resource) {
 
+        String namespace = resource.getMetadata().getNamespace();
+        String name = resource.getMetadata().getName();
+
         AtomicBoolean changed = new AtomicBoolean(false);
         AtomicBoolean isReady = new AtomicBoolean(true);
-        String name = resource.getMetadata().getName();
         List<V1Condition> conditions = resource.getStatus().getConditions();
 
-        statefulsetListener.find(name)
+        statefulsetListener.find(namespace, name)
                 .ifPresentOrElse(sts -> {
                     if (sts.getStatus() != null &&
                             Objects.equals(sts.getStatus().getReadyReplicas(), Integer.valueOf(1)) &&
@@ -99,7 +105,7 @@ public class MysqlCustomResourceController extends CustomResourceController<Mysq
                     statefulsetListener.updateCondition(changed, conditions, ChildResourceListener.ConditionStatus.MISSING, "StatefulSet");
                 });
 
-        serviceListener.find(name)
+        serviceListener.find(namespace, name)
                 .ifPresentOrElse(service -> {
                     statefulsetListener.updateCondition(changed, conditions, ChildResourceListener.ConditionStatus.AVAILABLE, "Service");
                 }, () -> {
@@ -107,7 +113,7 @@ public class MysqlCustomResourceController extends CustomResourceController<Mysq
                     statefulsetListener.updateCondition(changed, conditions, ChildResourceListener.ConditionStatus.MISSING, "Service");
                 });
 
-        secretListener.find(name)
+        secretListener.find(namespace, name)
                 .ifPresentOrElse(secret -> {
                     statefulsetListener.updateCondition(changed, conditions, ChildResourceListener.ConditionStatus.AVAILABLE, "Secret");
                 }, () -> {

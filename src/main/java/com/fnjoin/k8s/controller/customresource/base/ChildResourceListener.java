@@ -24,15 +24,15 @@ public abstract class ChildResourceListener<O extends KubernetesObject> {
     @Getter
     private KubernetesConnection connection;
 
-    public Optional<O> find(String name) {
-        String key = connection.getSpace() + "/" + name;
+    public Optional<O> find(String namespace, String name) {
+        String key = namespace + "/" + name;
         O value = informer.getIndexer().getByKey(key);
         return Optional.ofNullable(value);
     }
 
     public void initInformer(KubernetesConnection connection, RateLimitingQueue<Request> workQueue, String requiredApiVersion, String requiredKind) {
         this.connection = connection;
-        this.informer = createInformer(connection.getSpace(), connection.getSharedInformerFactory());
+        this.informer = createInformer(connection.getSharedInformerFactory());
 
         this.informer.addEventHandler(new ResourceEventHandler() {
             @Override
@@ -51,10 +51,16 @@ public abstract class ChildResourceListener<O extends KubernetesObject> {
             }
 
             private void addRequestToQueueForParent(String action, KubernetesObject childResource) {
-                log.debug("Got child-resource event: Event={}, Type={}, Name={}", action, childResource.getClass().getSimpleName(), childResource.getMetadata().getName());
+
+                String namespace = childResource.getMetadata().getNamespace();
+                String name = childResource.getMetadata().getName();
+                String typeName = childResource.getClass().getSimpleName();
+
+                log.debug("Got child-resource event: Event={}, Type={}, Namespace={}, Name={}", action, typeName, namespace, name);
+
                 Optional.ofNullable(childResource.getMetadata().getOwnerReferences().get(0))
                         .filter(ref -> ref.getApiVersion().equals(requiredApiVersion) && ref.getKind().equals(requiredKind))
-                        .map(ref -> new Request(getConnection().getSpace(), ref.getName()))
+                        .map(ref -> new Request(namespace, ref.getName()))
                         .ifPresent(req -> workQueue.addRateLimited(req));
             }
         });
@@ -93,5 +99,5 @@ public abstract class ChildResourceListener<O extends KubernetesObject> {
     }
 
 
-    public abstract SharedIndexInformer<O> createInformer(String space, SharedInformerFactory factory);
+    public abstract SharedIndexInformer<O> createInformer(SharedInformerFactory factory);
 }

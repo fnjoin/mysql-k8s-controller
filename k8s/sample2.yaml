@@ -3,6 +3,6 @@ kind: Mysql
 metadata:
   name: db-2
 spec:
-  storage: 256Mi
-  memory: 256Mi
-  cpu: 500m
+  storage: 128Mi
+  memory: 128Mi
+  cpu: 125m

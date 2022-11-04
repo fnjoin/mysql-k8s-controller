@@ -42,9 +42,8 @@ public abstract class CustomResourceController<O extends CustomResource<O>, L ex
 
         // Create the informer
         SharedIndexInformer<O> informer =
-                connection.getSharedInformerFactory().sharedIndexInformerFor((CallGeneratorParams params) -> connection.getCustomObjectsApi().listNamespacedCustomObjectCall(group,
+                connection.getSharedInformerFactory().sharedIndexInformerFor((CallGeneratorParams params) -> connection.getCustomObjectsApi().listClusterCustomObjectCall(group,
                                 version,
-                                connection.getSpace(),
                                 plural,
                                 null,
                                 null,
@@ -103,8 +102,8 @@ public abstract class CustomResourceController<O extends CustomResource<O>, L ex
         return controller;
     }
 
-    public Optional<O> find(String name) {
-        String key = connection.getSpace() + "/" + name;
+    public Optional<O> find(String namespace, String name) {
+        String key = namespace + "/" + name;
         return Optional.ofNullable(indexer.getByKey(key));
     }
 
