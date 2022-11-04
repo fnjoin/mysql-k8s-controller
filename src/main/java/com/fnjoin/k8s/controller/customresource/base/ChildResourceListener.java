@@ -60,6 +60,9 @@ public abstract class ChildResourceListener<O extends KubernetesObject> {
         });
     }
 
+    public boolean hasSynced() {
+        return informer.hasSynced();
+    }
 
     public static enum ConditionStatus {
         MISSING,

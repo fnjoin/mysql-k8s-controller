@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Slf4j
@@ -64,6 +65,10 @@ public abstract class CustomResourceController<O extends CustomResource<O>, L ex
         RateLimitingQueue<Request> workQueue = new DefaultRateLimitingQueue<>();
         informer.addEventHandler(new CustomResourceEventHandler<>(workQueue));
 
+        // initialize child listeners to inform work-queue on child-resource events
+        for (ChildResourceListener childListener : childListeners) {
+            childListener.initInformer(connection, workQueue, group + "/" + version, kind);
+        }
 
         // setup leader-election so only one controller instance handles reconciliation
         LeaseLock lock = new LeaseLock(connection.getSpace(), objectClass.getSimpleName().toLowerCase() + "-controller-leader", connection.getInstanceIdentity(), connection.getApiClient());
@@ -80,12 +85,10 @@ public abstract class CustomResourceController<O extends CustomResource<O>, L ex
                                 this))
                         .withWorkQueue(workQueue)
                         .withWorkerCount(workerCount)
+                        .withReadyFunc(() -> informer.hasSynced() && Arrays.stream(childListeners)
+                                .allMatch(listener -> listener.hasSynced()))
                         .build());
 
-        // initialize child listeners to inform work-queue on child-resource events
-        for (ChildResourceListener childListener : childListeners) {
-            childListener.initInformer(connection, workQueue, group + "/" + version, kind);
-        }
     }
 
     public Controller getController() {

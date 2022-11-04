@@ -46,9 +46,9 @@ public class CustomResourceReconciler<O extends CustomResource<O>, L extends Kub
             return new Result(true);
         } catch (Exception e) {
             if (e.getCause() != null) {
-                log.warn(e.getCause().getMessage(), e.getCause());
+                log.warn("Reconciling: CauseMessage={}", e.getCause().getMessage(), e.getCause());
             } else {
-                log.warn(e.getMessage(), e);
+                log.warn("Reconciling: Message={}", e.getMessage(), e);
             }
             return new Result(true);
         }
@@ -92,6 +92,6 @@ public class CustomResourceReconciler<O extends CustomResource<O>, L extends Kub
         }
         log.debug("Reconciling: Type={}, Name={}, ResourceInDesiredState={}, StatusChangeNeeded={}", resource.getClass().getSimpleName(), resource.getMetadata().getName(), resourceInDesiredState, statusChangeNeeded);
 
-        return true && resourceInDesiredState && !statusChangeNeeded;
+        return resourceInDesiredState && !statusChangeNeeded;
     }
 }
