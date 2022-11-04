@@ -12,7 +12,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -54,7 +54,7 @@ public class SecretListener extends ChildResourceListener<V1Secret> {
                         .kind("Secret")
                         .metadata(new V1ObjectMeta()
                                 .name(name)
-                                .ownerReferences(Arrays.asList(reference))
+                                .ownerReferences(List.of(reference))
                                 .labels(labels))
                         .type("Opaque")
                         .stringData(Map.of("MYSQL_ROOT_PASSWORD", UUID.randomUUID().toString())),

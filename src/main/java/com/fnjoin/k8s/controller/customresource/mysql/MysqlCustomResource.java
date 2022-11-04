@@ -56,7 +56,7 @@ public class MysqlCustomResource implements CustomResource<MysqlCustomResource> 
     }
 
     @Override
-    public MysqlCustomResource deepCopy(boolean keepStatus) {
+    public MysqlCustomResource deepCopy() {
         return MysqlCustomResource.builder()
                 .apiVersion(apiVersion)
                 .kind(kind)
@@ -72,17 +72,15 @@ public class MysqlCustomResource implements CustomResource<MysqlCustomResource> 
                         .memory(spec.getMemory())
                         .cpu(spec.getCpu())
                         .build())
-                .status(!keepStatus ?
-                        null :
-                        status != null ?
-                                Status.builder()
-                                        .ready(status.isReady())
-                                        .conditions(new ArrayList<>(status.getConditions() == null ? Collections.emptyList() : status.getConditions()))
-                                        .build() :
-                                Status.builder()
-                                        .ready(false)
-                                        .conditions(new ArrayList<>())
-                                        .build())
+                .status(status != null ?
+                        Status.builder()
+                                .ready(status.isReady())
+                                .conditions(new ArrayList<>(status.getConditions() == null ? Collections.emptyList() : status.getConditions()))
+                                .build() :
+                        Status.builder()
+                                .ready(false)
+                                .conditions(new ArrayList<>())
+                                .build())
                 .build();
     }
 

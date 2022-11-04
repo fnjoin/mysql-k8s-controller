@@ -10,7 +10,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -51,12 +51,12 @@ public class ServiceListener extends ChildResourceListener<V1Service> {
                         .kind("Service")
                         .metadata(new V1ObjectMeta()
                                 .name(name)
-                                .ownerReferences(Arrays.asList(reference))
+                                .ownerReferences(List.of(reference))
                                 .labels(labels))
                         .spec(new V1ServiceSpec()
                                 .selector(labels)
                                 .clusterIP("None")
-                                .ports(Arrays.asList(new V1ServicePort()
+                                .ports(List.of(new V1ServicePort()
                                         .protocol("TCP")
                                         .port(3306)
                                         .name("mysql")

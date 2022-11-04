@@ -3,5 +3,5 @@ package com.fnjoin.k8s.controller.customresource.base;
 import io.kubernetes.client.common.KubernetesObject;
 
 public interface CustomResource<T> extends KubernetesObject {
-    T deepCopy(boolean keepStatus);
+    T deepCopy();
 }

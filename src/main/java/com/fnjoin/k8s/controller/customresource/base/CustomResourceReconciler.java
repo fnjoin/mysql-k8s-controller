@@ -33,10 +33,10 @@ public class CustomResourceReconciler<O extends CustomResource<O>, L extends Kub
             if (obj.isPresent() && !isInDesiredState(obj.get())) {
 
                 O original = obj.get();
-                O existing = original.deepCopy(true);
+                O existing = original.deepCopy();
 
                 // apply the changes here
-                O changed = controller.applyChanges(original.getMetadata().getUid(), original.deepCopy(true));
+                O changed = controller.applyChanges(original.getMetadata().getUid(), original.deepCopy());
                 controller.applyStatusChanges(changed);
 
                 replaceExisting(existing.getMetadata().getResourceVersion(), changed);

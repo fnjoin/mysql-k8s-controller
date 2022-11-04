@@ -55,7 +55,7 @@ public class MysqlCustomResourceController extends CustomResourceController<Mysq
 
     @Override
     public boolean isStatusChangeNeeded(String uid, MysqlCustomResource resource) {
-        return applyStatusChanges(resource.deepCopy(true));
+        return applyStatusChanges(resource.deepCopy());
     }
 
     @Override
