@@ -87,11 +87,14 @@ public abstract class CustomResourceController<O extends CustomResource<O>, L ex
     }
 
     private LeaderElector getLeaderElector() {
+
         // setup leader-election so only one controller instance handles reconciliation
         LeaseLock lock = new LeaseLock(connection.getSpace(),
                 objectClass.getSimpleName().toLowerCase() + "-controller-leader",
                 connection.getInstanceIdentity(),
                 connection.getApiClient());
+
+        // See 'LeaderElectionConfig' section at https://github.com/kubernetes/client-go/blob/master/tools/leaderelection/leaderelection.go
         return new LeaderElector(new LeaderElectionConfig(lock,
                 Duration.ofSeconds(30),
                 Duration.ofSeconds(15),
