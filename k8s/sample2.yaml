@@ -4,5 +4,5 @@ metadata:
   name: db-2
 spec:
   storage: 128Mi
-  memory: 128Mi
+  memory: 64Mi
   cpu: 125m
