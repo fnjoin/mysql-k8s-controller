@@ -70,12 +70,8 @@ public abstract class CustomResourceController<O extends CustomResource<O>, L ex
             childListener.initInformer(connection, workQueue, group + "/" + version, kind);
         }
 
-        // setup leader-election so only one controller instance handles reconciliation
-        LeaseLock lock = new LeaseLock(connection.getSpace(), objectClass.getSimpleName().toLowerCase() + "-controller-leader", connection.getInstanceIdentity(), connection.getApiClient());
-        LeaderElectionConfig electionConfig = new LeaderElectionConfig(lock, Duration.ofSeconds(60), Duration.ofSeconds(15), Duration.ofSeconds(3));
-
         // creating the internal controller
-        controller = new LeaderElectingController(new LeaderElector(electionConfig),
+        controller = new LeaderElectingController(getLeaderElector(),
                 ControllerBuilder.defaultBuilder(connection.getSharedInformerFactory())
                         .withReconciler(new CustomResourceReconciler(connection,
                                 objectMapper,
@@ -89,6 +85,18 @@ public abstract class CustomResourceController<O extends CustomResource<O>, L ex
                                 .allMatch(listener -> listener.hasSynced()))
                         .build());
 
+    }
+
+    private LeaderElector getLeaderElector() {
+        // setup leader-election so only one controller instance handles reconciliation
+        LeaseLock lock = new LeaseLock(connection.getSpace(),
+                objectClass.getSimpleName().toLowerCase() + "-controller-leader",
+                connection.getInstanceIdentity(),
+                connection.getApiClient());
+        return new LeaderElector(new LeaderElectionConfig(lock,
+                Duration.ofSeconds(30),
+                Duration.ofSeconds(15),
+                Duration.ofSeconds(5)));
     }
 
     public Controller getController() {
