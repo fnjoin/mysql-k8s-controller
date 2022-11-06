@@ -30,21 +30,33 @@ public class CustomResourceReconciler<O extends CustomResource<O>, L extends Kub
     public Result reconcile(Request request) {
         try {
             Optional<O> obj = controller.find(request.getNamespace(), request.getName());
-            if (obj.isPresent() && !isInDesiredState(obj.get())) {
+            if (obj.isPresent()) {
 
                 O original = obj.get();
-                O existing = original.deepCopy();
+                String uid = original.getMetadata().getUid();
 
-                // apply the changes here
-                O changed = controller.applyChanges(original.getMetadata().getUid(), original.deepCopy());
-                controller.applyStatusChanges(changed);
+                boolean resourceInDesiredState = controller.isResourceInDesiredState(uid, original);
+                boolean statusChangeNeeded = false;
 
-                replaceExisting(existing.getMetadata().getResourceVersion(), changed);
-                return new Result(true);
+                if (resourceInDesiredState) {
+                    statusChangeNeeded = controller.isStatusChangeNeeded(uid, original);
+                }
+                log.debug("Reconciling: Type={}, Name={}, ResourceInDesiredState={}, StatusChangeNeeded={}", original.getClass().getSimpleName(), original.getMetadata().getName(), resourceInDesiredState, statusChangeNeeded);
+
+                if (!resourceInDesiredState || statusChangeNeeded) {
+
+                    // apply the changes here
+                    O changed = controller.applyChanges(uid, original.deepCopy());
+                    controller.applyStatusChanges(changed);
+
+                    String resourceVersion = original.getMetadata().getResourceVersion();
+                    replaceExisting(resourceVersion, changed);
+                    return new Result(true);
+                }
             }
         } catch (ConflictingVersionsException e) {
             return new Result(true);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (e.getCause() != null) {
                 log.warn("Reconciling: CauseMessage={}", e.getCause().getMessage(), e.getCause());
             } else {
@@ -77,21 +89,5 @@ public class CustomResourceReconciler<O extends CustomResource<O>, L extends Kub
                 throw e;
             }
         }
-    }
-
-
-    private boolean isInDesiredState(O resource) {
-
-        String uid = resource.getMetadata().getUid();
-
-        boolean resourceInDesiredState = controller.isResourceInDesiredState(uid, resource);
-        boolean statusChangeNeeded = false;
-
-        if (resourceInDesiredState) {
-            statusChangeNeeded = controller.isStatusChangeNeeded(uid, resource);
-        }
-        log.debug("Reconciling: Type={}, Name={}, ResourceInDesiredState={}, StatusChangeNeeded={}", resource.getClass().getSimpleName(), resource.getMetadata().getName(), resourceInDesiredState, statusChangeNeeded);
-
-        return resourceInDesiredState && !statusChangeNeeded;
     }
 }
