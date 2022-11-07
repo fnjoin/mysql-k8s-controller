@@ -2,13 +2,13 @@
 
 A sample Kubernetes controller written in Java with spring-boot. Most controllers are written in golang but the purpose of this repo is to show that it is possible to write a Kubernetes controller in Java as well. Writing a controller in Java instead of golang enables Java developers to learn about Kubernetes internals quicker since the language is not something they have to learn at the same time.
 
-This controller defines and handles the lifecycle of `mysql` type custom resources. The custom resource is defined by a [CRD registered with the cluster](k8s/crd.yaml). This controller relies on built-in Kubernetes resources to compose a `mysql` resource. It creates the following child resources:
+This controller defines and handles the lifecycle of `Mysql` type custom resources. The custom resource is defined by a [CRD registered with the cluster](k8s/crd.yaml). This controller relies on built-in Kubernetes resources to compose a `Mysql` resource. It creates the following child resources:
 
 - A `Secret` which contains the login credentials to connect to the MySql instance.
-- A `StatefulSet` which runs a single Pod MySql instance. The pod is assigned cpu, memory, and disk resources according to the `mysql` resource spec.
+- A `StatefulSet` which runs a single Pod MySql instance. The pod is assigned cpu, memory, and disk resources according to the `Mysql` resource spec.
 - A `Service` which fronts the MySql pod with a consistent name. This way the clients connect to the stable name provided by the service instead of figuring out which pod to connect to directly.
 
-In addition to creating the above child resources, the controller also makes sure that these resources continue to exist and are ready to use. The controller also keeps the `status` section of `mysql` resource updated with the current state of the child resources.
+In addition to creating the above child resources, the controller also makes sure that these resources continue to exist and are ready to use. The controller also keeps the `status` section of `Mysql` resource updated with the current state of the child resources.
 
 ## Pre-requisites
 
@@ -19,28 +19,51 @@ In addition to creating the above child resources, the controller also makes sur
 
 ## Running
 
-To run the sample, we need to register the CRD with cluster and then run this application locally so that it acts as the controller for these CRD objects
-
-### Apply the CRD
-
-Apply the [CRD](k8s/crd.yaml) so the cluster understands the `mysql` types of resources:
+To run the sample, we need to register the CRD with cluster and then run this application so that it acts as the controller for these CRD objects. Apply the [CRD](k8s/crd.yaml) so the cluster understands the `Mysql` types of resources:
 
 ```
 kubectl apply -f k8s/crd.yaml
 ```
 
-### Run the application
+### Locally
 
 ```
 ./gradlew clean bootrun
 ``` 
 
+### In the cluster
+
+First, we need to bundle the code into an OCI image. The [following script](k8s/create-java-images.sh) assumes we want to run in a local minikube instance. It builds the image using the docker daemon running inside minikube. Run it to create an image called (`fnjoin.com/mysql-controller-java:1.0`):
+
+```
+k8s/create-java-images.sh
+```
+
+Create the [`mysql-controller` namespace](k8s/namespace.yaml), where the controller will run:
+
+```
+kubectl apply -f k8s/namespace.yaml
+```
+
+Setup [*RBAC*](k8s/rbac.yaml) so the controller has permissions to run inside the cluster:
+
+```
+kubectl apply -f k8s/rbac.yaml
+```
+
+Deploy the controller as a [`Deployment`](k8s/deployment-java.yaml) resource:
+
+```
+kubectl apply -f k8s/deployment-java.yaml
+```
+
 ## Testing
 
+Once, the controller is running, we can test its functionality.
 
 ### Basics
 
-Apply one of the [sample](k8s/sample1.yaml) `mysql` resource YAMLs to create a MySql instance with 256MB of disk, 128MB of memory, and 1/4 of a CPU:
+Apply one of the [sample](k8s/sample1.yaml) `Mysql` resource YAMLs to create a MySql instance with 256MB of disk, 128MB of memory, and 1/4 of a CPU:
 
 ```
 kubectl apply -f k8s/sample1.yaml
@@ -61,7 +84,7 @@ db-1   256Mi     128Mi    250m   false
 
 Notice the `READY` column, it is an attribute set by the controller to indicate if the Mysql resource is ready to be used or not. 
 
-### Details of a `mysql` resource
+### Details of a `Mysql` resource
 
 If you want to see the details of the `db-1` object, running `kubectl get mysql db-1 -o yaml` will return something like:
 
@@ -101,4 +124,4 @@ After some time, the *StatefulSet* created by this controller for `db-1` will be
 
 For a bit of *chaos testing*, if you delete the corresponding `StatefulSet` object, notice how the controller re-creates that child resource and how it keeps the `status` object updated.
 
-Also, notice what happens when you delete a `mysql` resource. You can do that by running `kubectl delete mysql db-1`. Spoiler alert! the child resources will get cleaned up as well.
+Also, notice what happens when you delete a `Mysql` resource. You can do that by running `kubectl delete mysql db-1`. Spoiler alert! the child resources will get cleaned up as well.
