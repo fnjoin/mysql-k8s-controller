@@ -36,7 +36,7 @@ kubectl apply -f k8s/crd.yaml
 First, we need to bundle the code into an OCI image. The [following script](k8s/create-java-image.sh) assumes we want to run in a local minikube instance. It builds the image using the docker daemon running inside minikube. Run it to create an image called (`fnjoin.com/mysql-controller-java:1.0`):
 
 ```
-k8s/create-java-images.sh
+k8s/create-java-image.sh
 ```
 
 Create the [`mysql-controller` namespace](k8s/namespace.yaml), where the controller will run:
