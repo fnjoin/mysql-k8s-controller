@@ -33,7 +33,7 @@ kubectl apply -f k8s/crd.yaml
 
 ### In the cluster
 
-First, we need to bundle the code into an OCI image. The [following script](k8s/create-java-images.sh) assumes we want to run in a local minikube instance. It builds the image using the docker daemon running inside minikube. Run it to create an image called (`fnjoin.com/mysql-controller-java:1.0`):
+First, we need to bundle the code into an OCI image. The [following script](k8s/create-java-image.sh) assumes we want to run in a local minikube instance. It builds the image using the docker daemon running inside minikube. Run it to create an image called (`fnjoin.com/mysql-controller-java:1.0`):
 
 ```
 k8s/create-java-images.sh
