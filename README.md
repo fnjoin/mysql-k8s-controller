@@ -116,7 +116,7 @@ status:
   ready: false
 ```
 
-The `status` section is reserved for controllers like ours to update so that it informs us of inner details of what is happening with the resource. Notice that *StatefulSet*' condition is in the status of *CREATING* and hence the MySql resource itself is not ready.
+The `status` section is reserved for controllers like ours to update so that it informs us of inner details of what is happening with the resource. Notice that *StatefulSet* condition is in the status of *CREATING* and hence the MySql resource itself is not ready.
 
 After some time, the *StatefulSet* created by this controller for `db-1` will become ready and the controller will detect that and update this status.
 
@@ -130,3 +130,7 @@ The controller pays attention to all namespaces. If you create the `Mysql` resou
 For a bit of *chaos testing*, if you delete the corresponding `StatefulSet` object, notice how the controller re-creates that child resource and how it keeps the `status` object updated.
 
 Also, notice what happens when you delete a `Mysql` resource. You can do that by running `kubectl delete mysql db-1`. Spoiler alert! the child resources will get cleaned up as well.
+
+## Using in production
+
+**Don't use this in production !!!** It is missing useful features like ability to configure read-replicas, automated, backups, and other day-2 kind of concerns. There are much better alternatives available - like the [MySQL Operator for Kubernetes](https://dev.mysql.com/doc/mysql-operator/en/mysql-operator-introduction.html) from the MySQL team or [VMware Tanzu SQL with MySQL for Kubernetes](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/index.html) 
