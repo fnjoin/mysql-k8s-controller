@@ -63,7 +63,7 @@ Once, the controller is running, we can test its functionality.
 
 ### Basics
 
-Apply one of the [sample](k8s/sample1.yaml) `Mysql` resource YAMLs to create a MySql instance with 256MB of disk, 128MB of memory, and 1/4 of a CPU:
+Apply one of the [sample resource YAMLs](k8s/sample1.yaml) to create a `Mysql` instance with 256MB of storage, 128MB of memory, and 1/4 of a CPU:
 
 ```
 kubectl apply -f k8s/sample1.yaml
@@ -72,7 +72,7 @@ kubectl apply -f k8s/sample1.yaml
 This creates a `db-1` resource. Verify it by running:
 
 ```
-kubectl get mysql
+kubectl get mysqls
 ```
 
 Which will return a list like the following:
@@ -82,7 +82,7 @@ NAME   STORAGE   MEMORY   CPU    READY
 db-1   256Mi     128Mi    250m   false
 ```
 
-Notice the `READY` column, it is an attribute set by the controller to indicate if the Mysql resource is ready to be used or not. 
+Notice the `READY` column, it is an attribute set by the controller to indicate if the `Mysql` resource is ready to be used or not. 
 
 ### Details of a `Mysql` resource
 
@@ -119,6 +119,11 @@ status:
 The `status` section is reserved for controllers like ours to update so that it informs us of inner details of what is happening with the resource. Notice that *StatefulSet*' condition is in the status of *CREATING* and hence the MySql resource itself is not ready.
 
 After some time, the *StatefulSet* created by this controller for `db-1` will become ready and the controller will detect that and update this status.
+
+
+### Other namesapces
+
+The controller pays attention to all namespaces. If you create the `Mysql` resource in any other namespace, the child resources will be created in that namespace. 
 
 ### Chaos Testing
 
