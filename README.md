@@ -39,7 +39,7 @@ First, we need to bundle the code into an OCI image. The [following script](k8s/
 k8s/create-java-image.sh
 ```
 
-Create the [`mysql-controller` namespace](k8s/namespace.yaml), where the controller will run:
+Create the `mysql-controller` [namespace](k8s/namespace.yaml), where the controller will run:
 
 ```
 kubectl apply -f k8s/namespace.yaml
