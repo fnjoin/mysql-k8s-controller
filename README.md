@@ -133,4 +133,4 @@ Also, notice what happens when you delete a `Mysql` resource. You can do that by
 
 ## Using in production
 
-**Don't use this in production !!!** It is missing useful features like ability to configure read-replicas, automated, backups, and other day-2 kind of concerns. There are much better alternatives available - like the [MySQL Operator for Kubernetes](https://dev.mysql.com/doc/mysql-operator/en/mysql-operator-introduction.html) from the MySQL team or [VMware Tanzu SQL with MySQL for Kubernetes](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/index.html) 
+**Don't use this in production !!!** It is missing useful features like ability to configure read-replicas, automated backups, and other day-2 kind of concerns. There are much better alternatives available - like the [MySQL Operator for Kubernetes](https://dev.mysql.com/doc/mysql-operator/en/mysql-operator-introduction.html) from the MySQL team or [VMware Tanzu SQL with MySQL for Kubernetes](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/index.html) 
