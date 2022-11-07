@@ -22,12 +22,16 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'io.kubernetes:client-java-extended:16.0.1'
+	implementation 'io.kubernetes:client-java-extended:16.0.2'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 }
 
+def nativeImage = System.getenv("NATIVE_IMAGE") ?: "false"
 tasks.named('bootBuildImage') {
-	buildpacks =  ['gcr.io/paketo-buildpacks/bellsoft-liberica:9.9.0-ea', 'gcr.io/paketo-buildpacks/java-native-image']
+	builder = "paketobuildpacks/builder:tiny"
+	environment = [
+			"BP_NATIVE_IMAGE" : "${nativeImage}"
+	]
 }

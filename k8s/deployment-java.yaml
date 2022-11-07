@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-controller
+  namespace: mysql-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: java
+  template:
+    metadata:
+      labels:
+        type: java
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: app
+          image: fnjoin.com/mysql-controller-java:1.0
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: embedded
+            - name: SPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: INSTANCEIDENTITY
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name

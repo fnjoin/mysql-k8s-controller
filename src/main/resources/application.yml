@@ -8,6 +8,8 @@ logging:
     console: '%clr(%d{HH:mm:ss.SSS}){blue}%clr(:){red} %clr(%m){faint}%n'
 
 spring:
+  main:
+    web-application-type: none
   output:
     ansi:
       enabled: ALWAYS
