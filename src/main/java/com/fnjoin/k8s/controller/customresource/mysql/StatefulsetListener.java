@@ -95,7 +95,7 @@ public class StatefulsetListener extends ChildResourceListener<V1StatefulSet> {
                 null,
                 null,
                 null);
-        log.info("Created StatefulSet: Name={}", name);
+        log.info("Created StatefulSet: Namespace={}, Name={}", namespace, name);
     }
 
     @Override

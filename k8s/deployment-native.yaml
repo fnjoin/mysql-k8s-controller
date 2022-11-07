@@ -7,16 +7,16 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      type: java
+      type: native
   template:
     metadata:
       labels:
-        type: java
+        type: native
     spec:
       restartPolicy: Always
       containers:
         - name: app
-          image: fnjoin.com/mysql-controller-java:1.0
+          image: fnjoin.com/mysql-controller-native:1.0
           env:
             - name: SPACE
               valueFrom:

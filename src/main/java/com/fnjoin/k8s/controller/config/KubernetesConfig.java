@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import java.io.File;
 import java.io.FileReader;
@@ -24,8 +23,14 @@ import java.io.FileReader;
 public class KubernetesConfig {
 
     @Bean
-    @Profile("!embedded")
-    public ApiClient remoteApiClient() throws Exception {
+    public ApiClient apiClient() throws Exception {
+
+        try {
+            // first try to see if we are running inside a k8s cluster
+            return ClientBuilder.cluster().build();
+        } catch (Exception e) {
+            log.warn("Not running inside a cluster, will try other connection methods");
+        }
 
         File configFile = null;
         String kubeConfigVar = System.getenv("KUBECONFIG");
@@ -40,17 +45,6 @@ public class KubernetesConfig {
 
         KubeConfig config = KubeConfig.loadKubeConfig(new FileReader(configFile));
         return ClientBuilder.kubeconfig(config).build();
-    }
-
-    @Bean
-    @Profile("embedded")
-    public ApiClient embeddedApiClient() throws Exception {
-        // loading the in-cluster config, including:
-        //   1. service-account CA
-        //   2. service-account bearer-token
-        //   3. service-account namespace
-        //   4. master endpoints(ip, port) from pre-set environment variables
-        return ClientBuilder.cluster().build();
     }
 
     @Bean

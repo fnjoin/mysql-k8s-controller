@@ -62,7 +62,7 @@ public class SecretListener extends ChildResourceListener<V1Secret> {
                 null,
                 null,
                 null);
-        log.info("Created Secret: Name={}", name);
+        log.info("Created Secret: Namespace={}, Name={}", namespace, name);
     }
 }
 

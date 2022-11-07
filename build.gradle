@@ -30,8 +30,10 @@ dependencies {
 
 def nativeImage = System.getenv("NATIVE_IMAGE") ?: "false"
 tasks.named('bootBuildImage') {
-	builder = "paketobuildpacks/builder:tiny"
-	environment = [
-			"BP_NATIVE_IMAGE" : "${nativeImage}"
-	]
+	if (nativeImage.equals("true")) {
+		buildpacks =  ['gcr.io/paketo-buildpacks/bellsoft-liberica:9.9.0-ea', 'gcr.io/paketo-buildpacks/java-native-image']
+	} else {
+		builder = "paketobuildpacks/builder:tiny"
+		environment = [ "BP_NATIVE_IMAGE": "false"]
+	}
 }

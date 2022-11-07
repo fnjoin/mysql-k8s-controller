@@ -41,7 +41,12 @@ public class CustomResourceReconciler<O extends CustomResource<O>, L extends Kub
                 if (resourceInDesiredState) {
                     statusChangeNeeded = controller.isStatusChangeNeeded(uid, original);
                 }
-                log.debug("Reconciling: Type={}, Name={}, ResourceInDesiredState={}, StatusChangeNeeded={}", original.getClass().getSimpleName(), original.getMetadata().getName(), resourceInDesiredState, statusChangeNeeded);
+                log.debug("Reconciling: Type={}, Namespace={}, Name={}, ResourceInDesiredState={}, StatusChangeNeeded={}",
+                        original.getClass().getSimpleName(),
+                        original.getMetadata().getNamespace(),
+                        original.getMetadata().getName(),
+                        resourceInDesiredState,
+                        statusChangeNeeded);
 
                 if (!resourceInDesiredState || statusChangeNeeded) {
 

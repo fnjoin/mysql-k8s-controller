@@ -65,6 +65,6 @@ public class ServiceListener extends ChildResourceListener<V1Service> {
                 null,
                 null,
                 null);
-        log.info("Created Service: Name={}", name);
+        log.info("Created Service: Namespace={}, Name={}", namespace, name);
     }
 }

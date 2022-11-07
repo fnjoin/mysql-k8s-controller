@@ -15,13 +15,19 @@ public class CustomResourceEventHandler<O extends CustomResource<O>, L extends K
 
     @Override
     public void onAdd(O resource) {
-        log.debug("Got resource event: Event=UPDATED, Type={}, Name={}", resource.getClass().getSimpleName(), resource.getMetadata().getName());
+        log.debug("Got resource event: Event=UPDATED, Type={}, Namespace={}, Name={}",
+                resource.getClass().getSimpleName(),
+                resource.getMetadata().getNamespace(),
+                resource.getMetadata().getName());
         workQueue.add(new Request(resource.getMetadata().getNamespace(), resource.getMetadata().getName()));
     }
 
     @Override
     public void onUpdate(O oldResource, O newResource) {
-        log.debug("Got resource event: Event=UPDATED, Type={}, Name={}", newResource.getClass().getSimpleName(), newResource.getMetadata().getName());
+        log.debug("Got resource event: Event=UPDATED, Type={}, Namespace={}, Name={}",
+                newResource.getClass().getSimpleName(),
+                newResource.getMetadata().getNamespace(),
+                newResource.getMetadata().getName());
         workQueue.add(new Request(oldResource.getMetadata().getNamespace(), oldResource.getMetadata().getName()));
     }
 
