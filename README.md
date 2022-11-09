@@ -10,6 +10,8 @@ This controller defines and handles the lifecycle of `Mysql` type custom resourc
 
 In addition to creating the above child resources, the controller also makes sure that these resources continue to exist and are ready to use. The controller also keeps the `status` section of `Mysql` resource updated with the current state of the child resources.
 
+> Please visit: [Kubernetes Controller Pattern Example with Java and MySQL](https://fnjoin.com/post/2022-11-08-k8s-controller-java/). There is a lot more detailed information about what goes into creating a controller with Java, what concepts/classes (Client Machinery) are involved from the Kubernetes Client for Java library, and how to run the controller inside the cluster.
+
 ## Pre-requisites
 
 - Running Kubernetes cluster - a single node *minikube* instance will do
