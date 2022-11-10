@@ -9,10 +9,13 @@ spec:
     plural: mysqls
     singular: mysql
     kind: Mysql
+
   versions:
     - name: v1
       served: true
       storage: true
+      subresources:
+        status: {}
       schema:
         openAPIV3Schema:
           type: object

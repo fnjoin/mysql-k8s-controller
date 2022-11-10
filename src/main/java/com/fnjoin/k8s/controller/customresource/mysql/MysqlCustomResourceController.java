@@ -6,6 +6,7 @@ import com.fnjoin.k8s.controller.customresource.base.CustomResourceController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kubernetes.client.openapi.models.V1Condition;
 import io.kubernetes.client.openapi.models.V1OwnerReference;
+import io.kubernetes.client.util.generic.GenericKubernetesApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -27,10 +28,8 @@ public class MysqlCustomResourceController extends CustomResourceController<Mysq
         super(connection,
                 objectMapper,
                 "fnjoin.com",
-                "mysqls",
                 "v1",
-                MysqlCustomResource.class,
-                MysqlCustomResource.List.class);
+                MysqlCustomResource.class);
         this.statefulsetListener = statefulsetListener;
         this.secretListener = secretListener;
         this.serviceListener = serviceListener;
@@ -38,7 +37,17 @@ public class MysqlCustomResourceController extends CustomResourceController<Mysq
 
     @PostConstruct
     public void init() {
-        super.init(2, "Mysql", statefulsetListener, secretListener, serviceListener);
+        super.init(2,
+                "Mysql",
+                new GenericKubernetesApi<>(MysqlCustomResource.class,
+                        MysqlCustomResource.List.class,
+                        "fnjoin.com",
+                        "v1",
+                        "mysqls",
+                        getConnection().getCustomObjectsApi()),
+                statefulsetListener,
+                secretListener,
+                serviceListener);
     }
 
 

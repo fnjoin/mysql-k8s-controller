@@ -15,7 +15,7 @@ import io.kubernetes.client.extended.workqueue.RateLimitingQueue;
 import io.kubernetes.client.informer.SharedIndexInformer;
 import io.kubernetes.client.informer.cache.Indexer;
 import io.kubernetes.client.openapi.models.V1OwnerReference;
-import io.kubernetes.client.util.CallGeneratorParams;
+import io.kubernetes.client.util.generic.GenericKubernetesApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,31 +33,17 @@ public abstract class CustomResourceController<O extends CustomResource<O>, L ex
     private final KubernetesConnection connection;
     private final ObjectMapper objectMapper;
     private final String group;
-    private final String plural;
     private final String version;
     private final Class<O> objectClass;
-    private final Class<L> listClass;
 
-    public void init(int workerCount, String kind, ChildResourceListener... childListeners) {
+    public void init(int workerCount, String kind, GenericKubernetesApi<O, L> genericApi, ChildResourceListener... childListeners) {
 
         // Create the informer
-        SharedIndexInformer<O> informer =
-                connection.getSharedInformerFactory().sharedIndexInformerFor((CallGeneratorParams params) -> connection.getCustomObjectsApi().listClusterCustomObjectCall(group,
-                                version,
-                                plural,
-                                null,
-                                null,
-                                null,
-                                null,
-                                null,
-                                null,
-                                params.resourceVersion,
-                                null,
-                                params.timeoutSeconds,
-                                params.watch,
-                                null),
+        SharedIndexInformer<O> informer = connection
+                .getSharedInformerFactory()
+                .sharedIndexInformerFor(genericApi,
                         objectClass,
-                        listClass);
+                        Duration.ofMinutes(5).toMillis());
         indexer = informer.getIndexer();
 
         // setup the informer to add requests to work-queue when events are received
@@ -72,11 +58,8 @@ public abstract class CustomResourceController<O extends CustomResource<O>, L ex
         // creating the internal controller
         controller = new LeaderElectingController(getLeaderElector(),
                 ControllerBuilder.defaultBuilder(connection.getSharedInformerFactory())
-                        .withReconciler(new CustomResourceReconciler(connection,
-                                objectMapper,
-                                group,
-                                plural,
-                                version,
+                        .withReconciler(new CustomResourceReconciler(objectMapper,
+                                genericApi,
                                 this))
                         .withWorkQueue(workQueue)
                         .withWorkerCount(workerCount)
@@ -103,6 +86,10 @@ public abstract class CustomResourceController<O extends CustomResource<O>, L ex
 
     public Controller getController() {
         return controller;
+    }
+
+    public KubernetesConnection getConnection() {
+        return connection;
     }
 
     public Optional<O> find(String namespace, String name) {
