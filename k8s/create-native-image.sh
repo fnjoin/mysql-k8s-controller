@@ -12,4 +12,11 @@ fi
 
 # create the image
 export NATIVE_IMAGE=true
-./gradlew bootBuildImage --imageName=fnjoin.com/mysql-controller-native:1.0
+if [ "$(uname -m)" == "arm64" ]; then
+  ./gradlew bootBuildImage \
+    --imageName=fnjoin.com/mysql-controller-native:1.0 \
+    --builder=maliksalman/paketo-buildpacks-builder-arm64:focal
+else
+  ./gradlew bootBuildImage \
+    --imageName=fnjoin.com/mysql-controller-native:1.0
+fi

@@ -11,4 +11,11 @@ if [ $? -ne 0 ]; then
 fi
 
 # create the image
-./gradlew bootBuildImage --imageName=fnjoin.com/mysql-controller-java:1.0
+if [ "$(uname -m)" == "arm64" ]; then
+  ./gradlew bootBuildImage \
+    --imageName=fnjoin.com/mysql-controller-java:1.0 \
+    --builder=maliksalman/paketo-buildpacks-builder-arm64:focal
+else
+  ./gradlew bootBuildImage \
+    --imageName=fnjoin.com/mysql-controller-java:1.0
+fi
